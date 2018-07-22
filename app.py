@@ -4,7 +4,8 @@ import os
 from main_source import app as application
 
 ip = os.environ.get('OPENSHIFT_PYTHON_IP', 'localhost')
-port = int(os.environ.get('OPENSHIFT_PYTHON_PORT', 8051))
+#port = int(os.environ.get('OPENSHIFT_PYTHON_PORT', 8051))
+port = int(os.environ.get('OPENSHIFT_PYTHON_PORT', 8080))
 host_name = os.environ.get('OPENSHIFT_GEAR_DNS', 'localhost')
 
 if __name__ == '__main__':
