@@ -1,16 +1,24 @@
-#!/usr/bin/env python
+from flask import Flask
+from redis import Redis, RedisError
 import os
+import socket
 
-from main_source import app as application
+# Connect to Redis
+redis = Redis(host="redis", db=0, socket_connect_timeout=2, socket_timeout=2)
 
-ip = os.environ.get('OPENSHIFT_PYTHON_IP', 'localhost')
-#port = int(os.environ.get('OPENSHIFT_PYTHON_PORT', 8051))
-port = int(os.environ.get('OPENSHIFT_PYTHON_PORT', 8080))
-host_name = os.environ.get('OPENSHIFT_GEAR_DNS', 'localhost')
+app = Flask(__name__)
 
-if __name__ == '__main__':
-        from wsgiref.simple_server import make_server
-        httpd = make_server('localhost', port, app = application)
-        httpd.serve_forever()
-        application.run(port = port, debug = True)
+@app.route("/")
+def hello():
+    try:
+        visits = redis.incr("counter")
+    except RedisError:
+        visits = "<i>cannot connect to Redis, counter disabled</i>"
 
+    html = "<h3>Hello {name} Pattabhi team welcome to Docker Container..!</h3>" \
+           "<b>Hostname:</b> {hostname}<br/>" \
+           "<b>Visits:</b> {visits}"
+    return html.format(name=os.getenv("NAME", "SoftGen"), hostname=socket.gethostname(), visits=visits)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=80)
