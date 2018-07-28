@@ -1,0 +1,168 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: ${APPLICATION_NAME}
+objects:
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+    creationTimestamp:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+    namespace: 
+    resourceVersion:
+    selfLink: 
+    uid: 
+  spec:
+    host: ${HOSTNAME_HTTP}
+    port:
+      targetPort: ${SERVICE_PORT}-tcp
+    to:
+      kind: Service
+      name: ${APPLICATION_NAME}
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by:
+    creationTimestamp: 
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+    namespace: 
+    resourceVersion:
+    selfLink: 
+    uid: 
+  spec:
+    clusterIP: 
+    ports:
+      - name: ${SERVICE_PORT}-tcp
+        port: ${SERVICE_PORT}
+        protocol: TCP
+        targetPort: ${SERVICE_PORT}
+    selector:
+      deploymentconfig: ${APPLICATION_NAME}
+    sessionAffinity: None
+    type: ClusterIP
+
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: 
+    creationTimestamp:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+    namespace: 
+    resourceVersion: 
+    selfLink: 
+    uid: 
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${APPLICATION_NAME}:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: DEV
+        uri: ${GIT_URL}
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: 'python:3.6'
+          namespace: openshift
+      type: Source
+    triggers:
+      - imageChange:
+          lastTriggeredImageID:
+        type: ImageChange
+      - type: ConfigChange
+      - generic:
+          secret: 
+        type: Generic
+      - github:
+          secret: 
+        type: GitHub
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: 
+    creationTimestamp: 
+    generation: 1
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+    namespace: pytnon
+    resourceVersion: 
+    selfLink:
+    uid: 
+  spec:
+    lookupPolicy:
+      local: false
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    generation: 1
+    labels:
+      app: ${APPLICATION_NAME}
+      openshift.io/deployment-config.name: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+    namespace: 
+    ownerReferences:
+      - apiVersion: apps.openshift.io/v1
+        blockOwnerDeletion: true
+        controller: true
+        kind: DeploymentConfig
+        name: ${APPLICATION_NAME}
+        uid: 
+    resourceVersion: 
+    selfLink: 
+    uid: 
+  spec:
+    replicas: 1
+    selector:
+      deployment: 
+      deploymentconfig: ${APPLICATION_NAME}
+    template:
+      metadata:
+      spec:
+        containers:
+          - image:
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+  availableReplicas: 1
+  fullyLabeledReplicas: 1
+  observedGeneration: 2
+  readyReplicas: 1
+  replicas: 1
+parameters:
+- displayName: Application Name
+  value: first-python
+  name: APPLICATION_NAME
+  required: true
+- displayName: Service Port
+  value: "8080"
+  name: SERVICE_PORT
+- displayName: Git Url
+  value: 'https://github.com/joeyghb/Openshift-python-template-master.git'
+  name: GIT_URL
+- description: 'Custom hostname for http service route.'
+  displayName: Custom http Route Hostname                                            
+  name: HOSTNAME_HTTP
+  value: first-python-pytnon.192.168.99.100.nip.io
