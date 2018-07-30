@@ -1,5 +1,5 @@
-kind: Template
 apiVersion: v1
+kind: Template
 metadata:
   name: ${APPLICATION_NAME}
 label:
@@ -82,7 +82,7 @@ objects:
         dnsPolicy: ClusterFirst
         terminationGracePeriodSeconds: 30
     triggers:
-      type: ImageChange
+    - type: ImageChange
     - imageChangeParams:
         automatic: true
         containerNames:
@@ -106,7 +106,7 @@ objects:
       deploymentconfig: ${APPLICATION_NAME}
     type: ClusterIP
 - kind: Route
- apiVersion: v1
+  apiVersion: v1
   metadata:
     annotations:
       description: Route for application's HTTP service.
@@ -134,7 +134,6 @@ parameters:
 - displayName: Git branch/tag ref
   value: "DEV"
   name: GIT_REF
-- description: Custom hostname for http service route.
-  displayName: Custom http Route Hostname                                            
+- displayName: Custom http Route Hostname
   name: HOSTNAME_HTTP
   value: first-python-pytnon.192.168.99.100.nip.io
