@@ -1,0 +1,140 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: ${APPLICATION_NAME}
+label:
+  app: ${APPLICATION_NAME}
+  createdBy: JoeyChu-template-python
+objects:
+- kind: BuildConfig
+  apiVersion: v1  
+  metadata:
+    annotations:
+    creationTimestamp:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+    namespace: 
+  spec:
+    source:
+      type: Git
+      git:
+        ref: ${GIT_REF}
+        uri: ${GIT_URL}
+    strategy:
+      type: Source
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: 'python:3.6'
+          namespace: openshift
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${APPLICATION_NAME}:latest
+    triggers:
+      - imageChange:
+          lastTriggeredImageID:
+        type: ImageChange
+      - generic:
+          secret: 
+        type: Generic
+      - github:
+          secret: 
+        type: GitHub
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: ${APPLICATION_NAME}
+    labels:
+      app: ${APPLICATION_NAME}
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: ${APPLICATION_NAME}
+    strategy:
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app: ${APPLICATION_NAME}
+          deploymentconfig: ${APPLICATION_NAME}
+        name: ${APPLICATION_NAME}
+      spec:
+        containers:
+          name: ${APPLICATION_NAME}
+          image: ${APPLICATION_NAME}
+          imagePullPolicy: Always
+          env:
+          - name: TZ
+            value: Asia/Taipei
+          ports:
+          - containerPort: ${{SERVICE_PORT}}
+            protocol: TCP
+          resources: {}
+        restartPolicy: Always
+        dnsPolicy: ClusterFirst
+        terminationGracePeriodSeconds: 30
+    triggers:
+      type: ImageChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${APPLICATION_NAME}
+        from:
+          kind: ImageStreamTag
+          name: ${APPLICATION_NAME}:latest
+    - type: ConfigChange
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: ${APPLICATION_NAME}
+    labels:
+      app: ${APPLICATION_NAME}
+  spec:
+    ports:
+        port: ${{SERVICE_PORT}}
+        protocol: TCP
+        targetPort: ${{SERVICE_PORT}}
+    selector:
+      deploymentconfig: ${APPLICATION_NAME}
+    type: ClusterIP
+- kind: Route
+ apiVersion: v1
+  metadata:
+    annotations:
+      description: Route for application's HTTP service.
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}-route 
+  spec:
+    host: ${HOSTNAME_HTTP}
+    port:
+      targetPort: ${SERVICE_PORT}-tcp
+    to:
+      kind: Service
+      name: ${APPLICATION_NAME}
+parameters:
+- displayName: Application Name
+  value: first-python
+  name: APPLICATION_NAME
+  required: true
+- displayName: Service Port
+  value: "8080"
+  name: SERVICE_PORT
+- displayName: Git Url
+  value: "https://github.com/joeyghb/Openshift-python-template-master.git"
+  name: GIT_URL
+- displayName: Git branch/tag ref
+  value: "DEV"
+  name: GIT_REF
+- description: Custom hostname for http service route.
+  displayName: Custom http Route Hostname                                            
+  name: HOSTNAME_HTTP
+  value: first-python-pytnon.192.168.99.100.nip.io
