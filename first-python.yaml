@@ -1,13 +1,13 @@
-apiVersion: v1
 kind: Template
+apiVersion: v1
 metadata:
   name: ${APPLICATION_NAME}
 label:
   app: ${APPLICATION_NAME}
-  createdBy: JoeyChu-template-python
+  createdBy: Joeychu-template-python
 objects:
-- kind: BuildConfig
-  apiVersion: v1  
+- apiVersion: v1
+  kind: BuildConfig
   metadata:
     annotations:
     creationTimestamp:
@@ -37,19 +37,19 @@ objects:
           lastTriggeredImageID:
         type: ImageChange
       - generic:
-          secret: 
+          secret: secret
         type: Generic
       - github:
-          secret: 
+          secret: secret
         type: GitHub
-- kind: ImageStream
-  apiVersion: v1
+- apiVersion: v1
+  kind: ImageStream
   metadata:
     name: ${APPLICATION_NAME}
     labels:
       app: ${APPLICATION_NAME}
-- kind: DeploymentConfig
-  apiVersion: v1
+- apiVersion: v1
+  kind: DeploymentConfig
   metadata:
     labels:
       app: ${APPLICATION_NAME}
@@ -81,8 +81,8 @@ objects:
         restartPolicy: Always
         dnsPolicy: ClusterFirst
         terminationGracePeriodSeconds: 30
-    triggers:
-    - type: ImageChange
+    - triggers:
+      type: ImageChange
     - imageChangeParams:
         automatic: true
         containerNames:
@@ -91,8 +91,8 @@ objects:
           kind: ImageStreamTag
           name: ${APPLICATION_NAME}:latest
     - type: ConfigChange
-- kind: Service
-  apiVersion: v1
+- apiVersion: v1
+  kind: Service
   metadata:
     name: ${APPLICATION_NAME}
     labels:
@@ -105,8 +105,8 @@ objects:
     selector:
       deploymentconfig: ${APPLICATION_NAME}
     type: ClusterIP
-- kind: Route
-  apiVersion: v1
+- apiVersion: v1
+  kind: Route
   metadata:
     annotations:
       description: Route for application's HTTP service.
@@ -134,6 +134,7 @@ parameters:
 - displayName: Git branch/tag ref
   value: "DEV"
   name: GIT_REF
-- displayName: Custom http Route Hostname
+- description: Custom hostname for http service route.
+  displayName: Custom http Route Hostname                                            
   name: HOSTNAME_HTTP
   value: first-python-pytnon.192.168.99.100.nip.io
