@@ -94,26 +94,29 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
+    annotations:
+    creationTimestamp:
     labels:
       app: ${APPLICATION_NAME}
     name: ${APPLICATION_NAME}
   spec:
     ports:
-    - name: ${{SERVICE_PORT}}-tcp
+    - name: ${SERVICE_PORT}-tcp
       port: ${{SERVICE_PORT}}
       protocol: TCP
       targetPort: ${{SERVICE_PORT}}
     selector:
       deploymentconfig: ${APPLICATION_NAME}
+    sessionAffinity: None
     type: ClusterIP
 - apiVersion: v1
   kind: Route
   metadata:
     annotations:
-      description: Route for application's HTTP service.
+    creationTimestamp:
     labels:
       app: ${APPLICATION_NAME}
-    name: ${APPLICATION_NAME}-route 
+    name: ${APPLICATION_NAME}
   spec:
     host: ${HOSTNAME_HTTP}
     port:
@@ -121,6 +124,8 @@ objects:
     to:
       kind: Service
       name: ${APPLICATION_NAME}
+      weight: 100
+    wildcardPolicy: None
 parameters:
 - displayName: Application Name
   value: first-python
