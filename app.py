@@ -15,7 +15,7 @@ def hello():
     except RedisError:
         visits = "<i>cannot connect to Redis, counter disabled</i>"
 
-    html = "<h3>Hello {name} ! Welcome to OpenShift Pod !</h3>" \
+    html = "<h3>Hello {name} ! Welcome to OpenShift Pod ! Branch is DEV </h3>" \
            "<b>Hostname:</b> {hostname}<br/>" 
     return html.format(name=os.getenv("NAME", "JoeyChu"), hostname=socket.gethostname(), visits=visits)
 

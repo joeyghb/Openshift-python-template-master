@@ -1,7 +1,7 @@
-kind: Template
 apiVersion: v1
+kind: Template
 metadata:
-  name: ${APPLICATION_NAME}
+  name: first-python-template
 label:
   app: ${APPLICATION_NAME}
   createdBy: Joeychu-template-python
@@ -68,9 +68,9 @@ objects:
         name: ${APPLICATION_NAME}
       spec:
         containers:
-          name: ${APPLICATION_NAME}
-          image: ${APPLICATION_NAME}
+        - image: ${APPLICATION_NAME}
           imagePullPolicy: Always
+          name: ${APPLICATION_NAME}
           env:
           - name: TZ
             value: Asia/Taipei
@@ -81,8 +81,7 @@ objects:
         restartPolicy: Always
         dnsPolicy: ClusterFirst
         terminationGracePeriodSeconds: 30
-    - triggers:
-      type: ImageChange
+    triggers:
     - imageChangeParams:
         automatic: true
         containerNames:
@@ -90,18 +89,20 @@ objects:
         from:
           kind: ImageStreamTag
           name: ${APPLICATION_NAME}:latest
+      type: ImageChange
     - type: ConfigChange
 - apiVersion: v1
   kind: Service
   metadata:
-    name: ${APPLICATION_NAME}
     labels:
       app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
   spec:
     ports:
-        port: ${{SERVICE_PORT}}
-        protocol: TCP
-        targetPort: ${{SERVICE_PORT}}
+    - name: ${{SERVICE_PORT}}-tcp
+      port: ${{SERVICE_PORT}}
+      protocol: TCP
+      targetPort: ${{SERVICE_PORT}}
     selector:
       deploymentconfig: ${APPLICATION_NAME}
     type: ClusterIP
