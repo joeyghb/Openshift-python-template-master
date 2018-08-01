@@ -143,4 +143,4 @@ parameters:
 - description: Custom hostname for http service route.
   displayName: Custom http Route Hostname                                            
   name: HOSTNAME_HTTP
-  value: first-python-pytnon.192.168.99.100.nip.io
+  value: first-python-pytnon.nip.io
