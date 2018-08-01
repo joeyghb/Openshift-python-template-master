@@ -132,7 +132,7 @@ parameters:
   name: APPLICATION_NAME
   required: true
 - displayName: Service Port
-  value: "8080"
+  value: "8081"
   name: SERVICE_PORT
 - displayName: Git Url
   value: "https://github.com/joeyghb/Openshift-python-template-master.git"
