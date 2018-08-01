@@ -7,8 +7,8 @@ Although you can add your application's dependencies in **setup.py**, it is high
 You can easily transport your dev dependecies to this file by executing command such as ```pip freeze > requirements.txt``` if you have pip installed on your computer.
 
 ###Author : Joey Chu ###
-In ocp_template folder , can proivder Openshift Use template create pod
-Openshift will reate 
+In [ocp_template] folder,can proivder Openshift Use template create pod.
+Openshift will create 
 1.Build 
 2.ImageStream
 3.Deployment
