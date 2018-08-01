@@ -132,7 +132,7 @@ parameters:
   name: APPLICATION_NAME
   required: true
 - displayName: Service Port
-  value: "8081"
+  value: "9080"
   name: SERVICE_PORT
 - displayName: Git Url
   value: "https://github.com/joeyghb/Openshift-python-template-master.git"
@@ -143,4 +143,4 @@ parameters:
 - description: Custom hostname for http service route.
   displayName: Custom http Route Hostname                                            
   name: HOSTNAME_HTTP
-  value: first-python-pytnon.nip.io
+  value: first-python.192.168.64.4.nip.io
